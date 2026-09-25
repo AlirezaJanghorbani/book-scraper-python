@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+import csv
 
 def fetch_page(url: str) -> str | None:
     headers = {
@@ -37,3 +37,25 @@ def extraction_data(html_content: str) -> list[dict]:
         })
 
     return products_data
+
+def save_data(data: list[dict]) -> list[dict]:
+    fieldnames = ["title", "price"]
+
+    with open("products.csv", mode="w", newline="", encoding="utf-8-sig") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerows(data)  
+
+    print("The file was successfully created.")
+    return data
+
+if __name__ == "__main__":
+    target_url = "https://books.toscrape.com/index.html"
+    html = fetch_page(target_url)
+
+    if html:
+        data = extraction_data(html)
+        save_data(data)
+    else:
+        print("Some things went wrong")
